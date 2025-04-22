@@ -6,12 +6,15 @@
 /*   By: ottomata <ottomata@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 22:17:16 by ottomata          #+#    #+#             */
-/*   Updated: 2025/03/29 22:32:19 by ottomata         ###   ########.fr       */
+/*   Updated: 2025/04/22 03:10:12 by tblochet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STREAM_H
 # define STREAM_H
+# define RD_DFL_SZ 256
+# include <stdlib.h>
+# include <fcntl.h>
 
 typedef struct s_stream			t_stream;
 typedef unsigned char			t_byte;
@@ -42,7 +45,9 @@ enum e_endianness
 
 enum	e_options
 {
-	ENDIANNESS
+	FSO_ENDIANNESS,
+	FSO_WRAPPING,
+	__OPT_MAX__
 };
 
 struct	s_stream
@@ -51,14 +56,20 @@ struct	s_stream
 	t_pos		start;
 	t_pos		end;
 	t_pos		current;
-	t_endian	endianess;
+	int			wrapping;
+	t_endian	endianness;
 };
+
+
+t_stream		*new_stream(void);
 
 t_pos			stream_seek(t_stream *stream, t_offset pos, t_seek_ref whence);
 t_bytes			stream_read(t_stream *stream, t_size size);
 t_size			stream_write(t_stream *stream, t_bytes data, t_size size);
-t_stream		stream_open(const char *path);
-int				stream_setopt(t_stream *stream, t_opt optname, void *optval, t_size optsz);
+t_stream		*stream_open(const char *path);
+
+int				stream_setopt(t_stream *stream, t_opt optname, void *optval);
+int				stream_getopt(t_stream *stream, t_opt optname, void *optval);
 
 t_i8			stream_read8(t_stream *stream);
 t_i16			stream_read16(t_stream *stream);
